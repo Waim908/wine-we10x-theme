@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 由 wine-win10x-theme/tools/mksheet.py 生成：folder_open  @  places/folder-open
+     结构与 wine 的 dlls/*/resources/*.svg 同规格：
+       低色深格 4/8bpp = 预先量化好的索引色 PNG（内嵌 base64，单个透明色）；
+       32bpp 格        = <rect fill:none> 占位，矢量图形在 <defs> 里内联、由末尾的 <use> 画出来。 -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="632" height="272" viewBox="0 0 632 272">
+  <title>folder_open  @  places/folder-open</title>
+  <image id="icon:16-4" x="608" y="252" width="16" height="16" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAMFBMVEUAAAD///z/+eX29vT/5Zn/1Vnx04bw0ob901v/0k//0Er/z0b/yzz4xj7psCniowfMcmenAAAAAXRSTlMAQObYZgAAAF5JREFUeJx1zTEKwkAUANH3N0kjBLWxSZcTiGCfS3iPHNDCk4jWCWQrK2FTCRY65TAw/GdbSoZ4jWATzyNo0yep9WD6MndxoqtxuLxv55gfZVnytUmZQJV2wt7w47kClCYR6ALuaAEAAAAASUVORK5CYII="/>
+  <image id="icon:16-8" x="584" y="252" width="16" height="16" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAADAFBMVEUAAAD///z/++v/99/29vT/777/77z/7rv/7rr/7rn/7bj/7bf/117/1mL/1lz/1lv/1Vr/1Vn/1Vjx04bw0obx0oX/1Ff/1Fb/1FX/01T/01P/01L/0lH/0lD/0k//0U7/0U3/0Uz/0Ev/0Er/0En/z0j/z0f/z0b/zkX/zkT/zkP/zUL/zUH/zUD/zD//zD7/zD3/yzz/yzv/yzr/yjn/yjj/yjf/yTX3x0T2yUv2yEz2x0r2wC/3vyr0vC/qtDDnrifmribkqhvjpQzhoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD09h1XAAAAAXRSTlMAQObYZgAAAHJJREFUeJxjYCADuIABgu8sKowERBgYnBhRgAOmgCMjCxIACjhgCoABEzcXJwc7G6s9VICZV0FWSlyIn8eKwc7ESF9HU11FUV5GUkyQz5LBxszYUE9bQ01ZQU5aQkjAmsHW3NTIQFdLXVVJHqhJ0IKw1wBN3Q6hlSDcYgAAAABJRU5ErkJggg=="/>
+  <rect id="icon:16-32" x="560" y="252" width="16" height="16" style="fill:none"/>
+  <image id="icon:32-4" x="520" y="236" width="32" height="32" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAMFBMVEUAAAD///z08+7t7On/3HT/1Vr/1Fb/01P/0k//z0f/zUD9yTnutyvlrSHhoADhnwDBRKSfAAAAAXRSTlMAQObYZgAAAKFJREFUeJy1kD0KwlAQhL8J24lhTS4g3sDK1sYDeE0v4UmMniAvCFaCsci+oGkUwWnm7TCzPw/+ANECXJdZKEoAytFRBKcsWH6eBqo1t7eex4IJfhAMVi9lg0HzMVL5WPVnDNp24hii64EvefXNlpQS3KNpvQdwwB4HEn2Hd96n97GSQnAEikw4HMA9HMqaFHt4JxACn9ltAVTkb95Nb/sCT5svHOF2YjQNAAAAAElFTkSuQmCC"/>
+  <image id="icon:32-8" x="480" y="236" width="32" height="32" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAADAFBMVEUAAAD///z//PD//O//++7x8e/v7+3/7rrs7Ov/6KP/4Y3/33//333/3nz/3Xr/3Xn/3Xj/3Xf/3Xb/3HX/3HT/23P/23H/2nD/11//117/1l3/1lz/1lv+1V7/1Vr/1Vn/1Vj/1Ff/1Fb/1FX/01T/01P/01L/0lH/0lD/0k/90VP/0U7/0U3/0Uz/0Ev/0Er/0En/z0j/z0f/z0b/zkX/zkT/zkP/zUL/zUH/zUD/zD//zD7/zD3/yzz/yzv/yzr/yjn/yjj/yjf/yTb/yTX/yTT/yDb8xDD2xT32xDv2xDr2xDj2wzf3wjPxwkL2wTb2wTX2wTL2wDH2wC/2wC72vy32vyz2vyr2vij2vib2viX2vSP2vCX2vCTmrynlrSLlrB/krCDkqRnjqRrhoADhnwDgnwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC/xZ11AAAAAXRSTlMAQObYZgAAAR5JREFUeJxjYBgaIAUBCMljV4GiICUVi4KkeJwgOQ2oIIERD0gEKojDpyCObgrYOLACNipawcqGFbCSZQW7uJioiLCQoAA/Hy8vD7cfugJOHR1NDXVVFWVFBXkZaUkJWZACJmYIYGJi4dLX09XW1FBTVVZSlJeTkZKUACrwdbS3s7W2sjA3MzE2MtDX09HWUFdTUVZSkJeTlgIpcHN0sLe1sba0MDc1MTI00NOFWKKkqCAHtASowMXJ0cHO1sbK0tzM1NjIEGyJOtwSoAJXZycHezsbqCWGBvq6UEvA7gQpcHGGWWKGsEQNaglQgbsr0BKwOyGWgN0Js0QLlCijY2OiIiMiwsPDQkNDgoODAgMDAvx9fLy9vDw9yM1KJAEAULVV/io+DYoAAAAASUVORK5CYII="/>
+  <rect id="icon:32-32" x="440" y="236" width="32" height="32" style="fill:none"/>
+  <image id="icon:48-4" x="384" y="220" width="48" height="48" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAMFBMVEUAAAD///z7+fDx7ufx4LP/1Vr/1Fb/01L/0Er/zUL/yzryvzjkqBThoADgoADhnwD5fXHMAAAAAXRSTlMAQObYZgAAANtJREFUeJzdkb0NwjAQRt9ZbkBCBMQEyQJIjMACFAzCGOzCLEhZgDBC3CBSJRSOYzs/oomExBX25Z6/7y42/EcID5dmEVA+zWOw7tLVlIJnCHTt87prh6Sa92VkpgVaPe4jYBn1CMNMgUnFnEAD6aBaWFDM12MzqJZfwGhzHX74uasI7M4GysYA5MFUchAgESC+9mxPAtgFjbRDqaPVueZ1dYXSjogAibHnGqcObDwQfIilKihESws6r27v327ivJT3ib2UPxmqQL16hdbrpN1rbNt/hMaAuvHL+AAu6iRTFSUvJAAAAABJRU5ErkJggg=="/>
+  <image id="icon:48-8" x="328" y="220" width="48" height="48" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAADAFBMVEUAAAD///z//vf//PD//O/5+ff5+fb/+eb4+Pb/997/993/99z/9tv/9tr/8cbu7uzs7Ovo6Ofl5eT136jz2Zj/3Hj/2Gn/12D/11//117/1l3/1lz/1lv/1V7/1Vr/1Vn/1Vj81V3/1Ff/1Fb/1FX/01T/01P/01L/0lH/0lD/0k//0VH/0U7/0U3/0Uz/0Ev/0Er/0En/z0j/z0f/z0b/zkX/zkT/zkP/zUL/zUH/zUD/zD//zD7/zD3/yzz/yzv/yzr/yjn/yjj/yjf/yTb/yTX/yTT4ykX5yEX5yET5yEP5yEL5yEH5xz/5xz75xj35xjz/yDP6xzj5xjv5xjr5xTn5xTj5xTf3xT/0xUH0xUD0xT75xDf5xDb5xDX5wzT5wzP1xD30wz70wz30wjv5wzH5wzD5wi/5wi75wS35wSz5wSv5wCv5wCr5wCn4wCj3vST1uyL0uyT0uyP0uiPpuD/yuB/otz3otjvlqQ/lpAbipAriownjoQDhoQDhoADgoADhnwDgnwDhngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABTuryGAAAAAXRSTlMAQObYZgAAAYhJREFUeJzt1fkzAnEYx/HImSORI1JRpOhUdLhTEhFyU86U+y5nln/c99l292vHds0YY/D5/TXPu9lml8f73w9Z8tPyBpkFwQEyCk6QJNKDJ07AvRcAzw/iuhwnfgTwmijIeQkSxHMHceKvgjcAotqsE9GAyPfCN4HisqwrYQFhTdYJv/g3FFbBKslVwARo5TdpAb++R6vRdKk7O1TKdoVcJpO2NEuaGtvu0oDSBr0OCQRogQCIPW4gaDXodZQAQAkEVknAL8Ljo1V3m4yG1AkcJSXFGgL382OjI8NDgwNOh8Nu6++zWnrNJiMtEMBREgmAWxcClABACQA4SkEJAJfjLuoEJQCYmSg1K2qdAkyUHUcZcJSKiQJw5U6dwFFWHKXFUXIQOyRwM1FOHGXCUR8exi4C1x43K8qGo/Q4SpkSAC7mPPQJHGXBUax/yDa8+gDgKO6HQQvy9X1+dnpyfHQYi0WjB5HI/lY4HAptbiwvLQaDC4FAYHbG75+e8vkmvd6JlYxfmt+7d0Uw3ZKtmbHRAAAAAElFTkSuQmCC"/>
+  <rect id="icon:48-32" x="272" y="220" width="48" height="48" style="fill:none"/>
+  <rect id="icon:256-32" x="8" y="8" width="256" height="256" style="fill:none"/>
+  <defs>
+  <clipPath id="v0_clip"><rect x="0" y="0" width="16.933" height="16.933"/></clipPath>
+  <g xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" id="v0" clip-path="url(#v0_clip)">
+ <defs>
+  <style type="text/css"/>
+  <linearGradient id="v0_linearGradient1064" x1="-15.961" x2="-.30109" y1="-43.254" y2="-54.196" gradientTransform="matrix(1 0 0 1.1 16.669 62.435)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#ffc832" offset="0"/>
+   <stop stop-color="#ffdc6e" offset="1"/>
+  </linearGradient>
+  <linearGradient id="v0_linearGradient1006" x1=".52939" x2="16.217" y1="2.7784" y2="14.872" gradientTransform="matrix(1,0,0,1.1,16.669,62.435)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#e1a000" offset="0"/>
+   <stop stop-color="#ffdc6e" offset="1"/>
+  </linearGradient>
+  <linearGradient id="v0_linearGradient969" x1="-16.14" x2="-1.0699" y1="-55.616" y2="-44.835" gradientTransform="matrix(1,0,0,1.1,16.669,62.435)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#e1a000" offset="0"/>
+   <stop stop-color="#ffdc6e" offset="1"/>
+  </linearGradient>
+ </defs>
+ 
+ <g fill="#5e4aa6" stroke-width=".26458">
+  <circle cx="-330.35" cy="-328.38" r="0"/>
+  <circle cx="-312.11" cy="-326.25" r="0"/>
+  <circle cx="-306.02" cy="-333.07" r="0"/>
+  <circle cx="-308.84" cy="-326.01" r="0"/>
+  <circle cx="-328.8" cy="-330.45" r="0"/>
+  <g transform="translate(24.108 -4.592)">
+   <circle cx="-330.35" cy="-328.38" r="0"/>
+   <circle cx="-312.11" cy="-326.25" r="0"/>
+   <circle cx="-306.02" cy="-333.07" r="0"/>
+   <circle cx="-308.84" cy="-326.01" r="0"/>
+   <circle cx="-328.8" cy="-330.45" r="0"/>
+  </g>
+  <g transform="translate(2.3479 -14.944)">
+   <circle cx="-330.35" cy="-328.38" r="0"/>
+   <circle cx="-312.11" cy="-326.25" r="0"/>
+   <circle cx="-306.02" cy="-333.07" r="0"/>
+   <circle cx="-308.84" cy="-326.01" r="0"/>
+   <circle cx="-328.8" cy="-330.45" r="0"/>
+  </g>
+  <g transform="translate(.000295 -.00036978)">
+   <circle cx="-330.35" cy="-328.38" r="0"/>
+   <circle cx="-312.11" cy="-326.25" r="0"/>
+   <circle cx="-306.02" cy="-333.07" r="0"/>
+   <circle cx="-308.84" cy="-326.01" r="0"/>
+   <circle cx="-328.8" cy="-330.45" r="0"/>
+  </g>
+ </g>
+ <g transform="translate(.000295 -.00036978)">
+  <g transform="matrix(1,0,0,1.1,16.669,63.956)" fill="url(#v0_linearGradient969)" stroke-width=".66145">
+   <path d="m-8.2026-51.317h-7.9373v-3.6379c0-0.36531 0.29614-0.66144 0.66144-0.66144h5.6223l1.6536 1.3229z" fill="url(#v0_linearGradient969)"/>
+  </g>
+  <rect x=".52939" y="4.2333" width="15.874" height="10.848" ry=".79373" fill="url(#v0_linearGradient1006)"/>
+  <rect x=".97311" y="4.6963" width="14.987" height="9.9217" ry=".29919" fill="#fffffc"/>
+ </g>
+ <rect x="2.1165" y="7.4914" width="12.7" height=".26458" ry=".13229" fill="#dcdcdc" stroke-width=".89442"/>
+ <rect x="2.1165" y="9.1013" width="12.7" height=".26458" ry=".13229" fill="#dcdcdc" stroke-width=".89442"/>
+ <path d="m15.742 10.152h-7.2759l-1.6536 1.4552h-5.6223c-0.36531 0-0.66144 0.32575-0.66144 0.72759v2.0179c0 0.40184 0.29614 0.72759 0.66144 0.72759h14.552c0.36531 0 0.66145-0.32575 0.66145-0.72759v-3.4732c0-0.40184-0.29614-0.72759-0.66145-0.72759z" fill="url(#v0_linearGradient1064)" stroke-width=".69373"/>
+  </g>
+  </defs>
+  <g transform="translate(560,252) scale(0.944900490167)"><use xlink:href="#v0"/></g>
+  <g transform="translate(440,236) scale(1.88980098033)"><use xlink:href="#v0"/></g>
+  <g transform="translate(272,220) scale(2.8347014705)"><use xlink:href="#v0"/></g>
+  <g transform="translate(8,8) scale(15.1184078427)"><use xlink:href="#v0"/></g>
+</svg>
