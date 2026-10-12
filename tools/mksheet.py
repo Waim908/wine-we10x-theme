@@ -545,7 +545,7 @@ def build_sheet(resolved, src_dir, title):
     name = resolved["name"]
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
-        '<!-- 由 wine-win10x-theme/tools/mksheet.py 生成：%s' % title,
+        '<!-- 由 wine-We10x-theme/tools/mksheet.py 生成：%s' % title,
         '     结构与 wine 的 dlls/*/resources/*.svg 同规格：',
         '       低色深格 4/8bpp = 预先量化好的索引色 PNG（内嵌 base64，单个透明色）；',
         '       32bpp 格        = <rect fill:none> 占位，矢量图形在 <defs> 里内联、'

@@ -1,4 +1,4 @@
-# wine-win10x-theme
+# wine-We10x-theme
 
 用 [We10X-icon-theme](https://github.com/yeyushengfan258/We10X-icon-theme) 的图标替换 **wine 的
 shell32 / user32 图标资源**，把 `/desktop=shell` 里那套 Tango 风格换成 Windows 10 X 风格。
