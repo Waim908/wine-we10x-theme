@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+# 被换下来的旧手绘图，只留作还原用
+tools/pixels/_bak/

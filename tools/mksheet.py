@@ -73,6 +73,11 @@ NEEDED_SIZES = (16, 32, 48, 256)
 #   ⇒ 也就是说同一尺寸的那三格不是「三种风格」，而是**同一张图的三种颜色数**。
 PNG_COLORS = {4: 16, 8: 256}
 
+# 手绘覆盖层：`pixels/<wine资源名>@<尺寸>.png`。
+# 有些图标在 16 档上的简化画法是人眼才能定的（哪两像素该留、描边占几列），
+# 自动缩放给不出，就用这个目录放人工画的版本；见 tools/pixeledit.py。
+PIXEL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pixels")
+
 # 类别优先级：同名的图标可能散在多个类别里，按这个顺序取
 CATEGORY_ORDER = ["places", "devices", "apps", "actions", "mimes",
                   "status", "categories", "preferences", "emblems"]
@@ -97,8 +102,10 @@ def build_index(src_dir):
             spath = os.path.join(cpath, size)
             if not os.path.isdir(spath):
                 continue
-            if size.startswith("symbolic"):       # 单色版，不要
-                continue
+            # `symbolic/` 是单色版目录。**收录，但不参与自动挑选**：resolve 只在
+            # 这个名字既没有数字尺寸、也没有 scalable 时才兜底用它。这样映射表能
+            # 点名单色稿（`drive-optical-symbolic` 全主题只有这一档），
+            # 而普通彩色图标不会被它抢走。
             for fn in os.listdir(spath):
                 if not fn.endswith(".svg"):
                     continue
@@ -135,7 +142,13 @@ def resolve(idx, name, cat, target):
 
     nums = sorted(int(s) for s in avail if s.isdigit())
     if not nums:
-        return pick("scalable") if "scalable" in avail else None
+        if "scalable" in avail:
+            return pick("scalable")
+        # 只剩 `symbolic/` 的名字（如 `drive-optical-symbolic`）就用单色稿：
+        # 它本来就是这套主题为这类设备图标的唯一画法，放大是纯矢量、不糊。
+        if "symbolic" in avail:
+            return pick("symbolic")
+        return None
 
     if str(target) in avail:
         return pick(str(target))
@@ -203,7 +216,115 @@ def quant_indexed_png(svg_path, size, colors):
     return buf.getvalue()
 
 
-_ATTR_RE = re.compile(r'([\w:.-]+)\s*=\s*"([^"]*)"')
+# ------------------------------------------------------------------ 手绘覆盖层
+
+def pixel_path(wine_name, size, pixels_dir=None):
+    """手绘覆盖图的路径：`<pixels_dir>/<wine资源名>@<尺寸>.png`。"""
+    return os.path.join(pixels_dir or PIXEL_DIR, "%s@%d.png" % (wine_name, size))
+
+
+def pixel_override(wine_name, size, pixels_dir=None):
+    """读手绘覆盖图；没有这个尺寸的手绘版就返回 None。"""
+    path = pixel_path(wine_name, size, pixels_dir)
+    if not os.path.exists(path):
+        return None
+    from PIL import Image
+    im = Image.open(path)
+    im.load()
+    return im.convert("RGBA")
+
+
+def indexed_png_from_image(im, size, colors):
+    """把一张手绘图编码成**索引色 PNG**（wine 的 4/8bpp 格要的格式）。
+
+    与 `quant_indexed_png` 的分工：那个是「渲染结果 → 量化」，允许中位切分；
+    手绘图是**人定的颜色**，只要能装进调色板就必须原样保留 —— 否则 4bpp 档会
+    把作者挑的那几个色挪位，16 档看起来就不是他画的那张了。只有颜色数超出
+    上限（4bpp 15 色 / 8bpp 255 色）时才退回中位切分。
+    """
+    import numpy as np
+    from PIL import Image
+
+    im = im.convert("RGBA")
+    if im.size != (size, size):
+        im = im.resize((size, size), Image.NEAREST)
+
+    a = np.asarray(im)
+    trans = a[..., 3] < 128                    # 硬边 alpha，与 wine 低色深格一致
+    keep = ~trans
+    idx = np.zeros((size, size), np.uint8)     # 索引 0 恒为「透明色」
+    pal = [0, 0, 0]
+    limit = colors - 1
+
+    if keep.any():
+        # 第一次扫描：按出现顺序收集颜色，做「颜色 → 索引」表
+        seen, order = {}, []
+        for y in range(size):
+            for x in range(size):
+                if not keep[y, x]:
+                    continue
+                c = (int(a[y, x, 0]), int(a[y, x, 1]), int(a[y, x, 2]))
+                if c not in seen:
+                    seen[c] = len(order) + 1
+                    order.append(c)
+
+        if len(order) <= limit:
+            for y in range(size):
+                for x in range(size):
+                    if keep[y, x]:
+                        idx[y, x] = seen[(int(a[y, x, 0]),
+                                          int(a[y, x, 1]),
+                                          int(a[y, x, 2]))]
+            for c in order:
+                pal += list(c)
+        else:
+            rgb = a[..., :3][keep]
+            q = Image.fromarray(rgb.reshape(-1, 1, 3), "RGB").quantize(
+                colors=limit, method=Image.MEDIANCUT)
+            qi = np.asarray(q).reshape(-1).astype(np.int32)
+            idx[keep] = (qi + 1).astype(np.uint8)
+            used = int(qi.max()) + 1
+            pal += (q.getpalette() or [])[: used * 3]
+
+    p = Image.fromarray(idx, mode="P")
+    p.putpalette((pal + [0] * 768)[:768])
+    buf = io.BytesIO()
+    p.save(buf, "PNG", bits=4 if colors <= 16 else 8, transparency=0)
+    return buf.getvalue()
+
+
+def override_png(im, size, depth):
+    """手绘图落成某一档色深要的 PNG 字节。
+
+    32bpp 格原样内嵌 RGBA（wine 自己的 `icon:16-32` 就是这么做的），
+    4/8bpp 格走索引化。尺寸不符时用 NEAREST 缩放 —— 像素画不能插值。
+    """
+    from PIL import Image
+
+    img = im.convert("RGBA")
+    if img.size != (size, size):
+        img = img.resize((size, size), Image.NEAREST)
+    if depth >= 32:
+        buf = io.BytesIO()
+        img.save(buf, "PNG", optimize=True)
+        return buf.getvalue()
+    return indexed_png_from_image(img, size, PNG_COLORS[depth])
+
+
+# 属性提取：**单双引号都要认**。We10X 里有一部分稿子（不是 Inkscape 出的，
+# 例如 `devices/symbolic/drive-optical-symbolic.svg`）根标签写成
+# `<svg height='16.15' width='16' xmlns='…'>`。只认双引号时 width/height 取不到，
+# 几何退化成 0、图形按**原始尺寸**画进槽位 —— 256 格里只剩一个小点，
+# 而且不报任何错，只能靠肉眼发现。
+_ATTR_RE = re.compile(r"""([\w:.-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')""")
+
+
+def _attr_dict(tag):
+    """把开标签里的属性读成 dict（同名取最后一次，与 XML 一致）。"""
+    out = {}
+    for m in _ATTR_RE.finditer(tag):
+        out[m.group(1)] = m.group(2) if m.group(2) is not None else m.group(3)
+    return out
 
 
 def _svg_root_span(text):
@@ -481,9 +602,10 @@ def inline_body(svg_path, tag, slots=None):
     inner = re.sub(r"<sodipodi:namedview\b.*?</sodipodi:namedview>", "", inner, flags=re.S)
     inner = re.sub(r"<!--.*?-->", "", inner, flags=re.S)
 
-    attrs = dict(_ATTR_RE.findall(open_tag))
+    attrs = _attr_dict(open_tag)
     # 源根标签上的命名空间声明必须搬过来，否则内部的 inkscape:/sodipodi: 前缀会变成未定义
-    nsdecls = re.findall(r'xmlns(?::[\w.-]+)?\s*=\s*"[^"]*"', open_tag)
+    nsdecls = [m.group(0) for m in re.finditer(
+        r"""xmlns(?::[\w.-]+)?\s*=\s*(?:"[^"]*"|'[^']*')""", open_tag)]
 
     vb = attrs.get("viewBox") or attrs.get("viewbox")
     if vb:
@@ -536,11 +658,15 @@ def use_group(tag, geom, x, y, size):
             '<use xlink:href="#%s"/></g>' % (tx, ty, k, tag))
 
 
-def build_sheet(resolved, src_dir, title):
+def build_sheet(resolved, src_dir, title, wine_name=None, pixels_dir=None):
     """resolved: {目标尺寸: (类别, 尺寸目录)} —— 返回拼版 SVG 的文本。
 
     结构**照 wine**：先按固定顺序列出 10 个槽位的「帧元素」（根 <svg> 的直接子元素），
     再把 32bpp 槽位要用的矢量图形内联在文件末尾。
+
+    `wine_name` 给了就去 `pixels/`（或 `pixels_dir`）找 `wine_name@尺寸.png`：
+    找到哪个尺寸的手绘覆盖，就把**那一档的三格**（4/8/32bpp）全部换成这张位图 ——
+    同一尺寸的三格本来就是同一张图的不同颜色数，不能只换其中一格。
     """
     name = resolved["name"]
     lines = [
@@ -554,8 +680,21 @@ def build_sheet(resolved, src_dir, title):
         '     width="%d" height="%d" viewBox="0 0 %d %d">' % (SHEET_W, SHEET_H, SHEET_W, SHEET_H),
         '  <title>%s</title>' % title,
     ]
+    overrides = {}
+    if wine_name:
+        for s in NEEDED_SIZES:
+            im = pixel_override(wine_name, s, pixels_dir)
+            if im is not None:
+                overrides[s] = im
+
     vectors = []
     for (size, depth), (x, y, w, h) in SLOTS:
+        if size in overrides:
+            png = override_png(overrides[size], size, depth)
+            uri = "data:image/png;base64," + base64.b64encode(png).decode("ascii")
+            lines.append('  <image id="icon:%d-%d" x="%d" y="%d" width="%d" height="%d"'
+                         ' xlink:href="%s"/>' % (size, depth, x, y, w, h, uri))
+            continue
         cat, size_dir = resolved[size]
         path = os.path.join(src_dir, cat, size_dir, "%s.svg" % name)
         if depth >= 32:
@@ -712,7 +851,8 @@ def main(argv=None):
             continue
         resolved.update(picks)
 
-        svg = build_sheet(resolved, args.src, "%s  @  %s/%s" % (name, row["cat"], row["we10x"]))
+        svg = build_sheet(resolved, args.src, "%s  @  %s/%s" % (name, row["cat"], row["we10x"]),
+                          wine_name=name)
         with open(os.path.join(args.outdir, "%s.svg" % name), "w", encoding="utf-8") as fh:
             fh.write(svg)
 

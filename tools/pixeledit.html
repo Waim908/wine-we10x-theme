@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>像素图标编辑器 · wine-We10x-theme</title>
+<style>
+:root{
+  --bg:#12141a; --panel:#1a1d25; --panel2:#20242e; --line:#2c313d;
+  --text:#e7eaf0; --dim:#98a0b0; --accent:#5aa0ff; --accent2:#2f6fd0;
+  --ok:#4ec98a; --warn:#e8b45a; --bad:#e8685a;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text); overflow:hidden;
+  font:13px/1.45 system-ui,-apple-system,"Segoe UI","Noto Sans CJK SC","Microsoft YaHei",sans-serif;
+  display:flex; flex-direction:column;
+}
+button{font:inherit;color:inherit}
+
+header{
+  display:flex; align-items:center; gap:14px; padding:9px 16px;
+  border-bottom:1px solid var(--line); background:var(--panel); flex:none;
+}
+.brand{display:flex; align-items:baseline; gap:10px; min-width:0}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 10px var(--accent); flex:none; align-self:center}
+.brand h1{font-size:14px;font-weight:600;margin:0;white-space:nowrap}
+.brand .sub{font-size:12px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.head-actions{margin-left:auto;display:flex;align-items:center;gap:8px;flex:none}
+.status{font-size:12px;color:var(--dim);font-family:ui-monospace,monospace;white-space:nowrap}
+.status b{color:var(--text);font-weight:600}
+.status .hand{color:var(--warn)}
+
+.btn{
+  border:1px solid var(--line); background:var(--panel2); padding:6px 13px; border-radius:6px;
+  cursor:pointer; white-space:nowrap; transition:background .12s,border-color .12s;
+}
+.btn:hover:not(:disabled){background:#262b36;border-color:#3a4152}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent2);border-color:#3f83e6;font-weight:600}
+.btn.primary:hover:not(:disabled){background:#3a7fdd}
+.btn.ghost{background:transparent}
+.btn.small{padding:4px 9px;font-size:12px;border-radius:5px}
+
+.layout{flex:1;display:grid;grid-template-columns:264px minmax(0,1fr);min-height:0}
+aside{border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
+.search{padding:10px;border-bottom:1px solid var(--line);flex:none}
+.search input{
+  width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);
+  border-radius:6px;padding:6px 9px;font:inherit;outline:none;
+}
+.search input:focus{border-color:var(--accent)}
+.count{font-size:11px;color:var(--dim);padding:6px 10px 2px;flex:none}
+.list{overflow:auto;padding:2px 6px 12px;flex:1}
+.item{
+  display:flex;align-items:center;gap:9px;padding:5px 7px;border-radius:6px;
+  cursor:pointer;border:1px solid transparent;
+}
+.item:hover{background:var(--panel2)}
+.item.on{background:#233048;border-color:#33507d}
+.item img{width:24px;height:24px;image-rendering:pixelated;flex:none;
+  background:repeating-conic-gradient(#272b34 0 25%,#1e222a 0 50%) 0 0/8px 8px}
+.item .nm{min-width:0;flex:1}
+.item .nm b{display:block;font-weight:500;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .nm span{display:block;font-size:10px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .mark{font-size:10px;color:var(--warn);border:1px solid #4a3c22;background:#2a2317;
+  padding:0 4px;border-radius:3px;flex:none}
+.empty{color:var(--dim);padding:18px 10px;text-align:center}
+
+main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.toolbar{
+  display:flex;align-items:center;gap:8px;padding:8px 14px;flex-wrap:wrap;
+  border-bottom:1px solid var(--line);background:var(--panel);flex:none;
+}
+.seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{background:transparent;border:0;padding:5px 10px;cursor:pointer;font-size:12px;color:var(--dim)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:#2b3a55;color:#cfe2ff}
+.seg button:hover:not(.on){background:var(--panel2);color:var(--text)}
+.sep{width:1px;height:20px;background:var(--line);margin:0 2px}
+.chk{display:flex;align-items:center;gap:5px;color:var(--dim);font-size:12px;cursor:pointer}
+.hint{margin-left:auto;color:var(--dim);font-size:11px}
+
+.workspace{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 252px;gap:14px;padding:14px;min-height:0}
+.canvas-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;overflow:auto;padding:16px;min-height:0;
+}
+canvas#grid-canvas{
+  image-rendering:pixelated; cursor:crosshair; touch-action:none;
+  box-shadow:0 0 0 1px #3a4152, 0 8px 30px rgba(0,0,0,.35);
+}
+
+.side{overflow:auto;display:flex;flex-direction:column;gap:10px;min-height:0;padding-right:2px}
+section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 11px}
+section h2{font-size:11px;font-weight:600;color:var(--dim);margin:0 0 8px;
+  letter-spacing:.06em;text-transform:uppercase}
+
+.colorrow{display:flex;gap:8px;align-items:center}
+input[type=color]{
+  width:38px;height:32px;padding:0;border:1px solid var(--line);border-radius:6px;
+  background:var(--bg);cursor:pointer;
+}
+input.hex{
+  flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);color:var(--text);
+  border-radius:6px;padding:6px 8px;font:12px/1.4 ui-monospace,monospace;outline:none;
+}
+input.hex:focus{border-color:var(--accent)}
+.palette{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:9px}
+.rowbtns{display:flex;gap:6px;margin-top:9px}
+.sw{aspect-ratio:1;border-radius:3px;border:1px solid rgba(255,255,255,.14);cursor:pointer;padding:0}
+.sw.on{outline:2px solid var(--accent);outline-offset:1px}
+/* 取色记录：从参考图/画布吸到的颜色，跨图标、跨刷新都留着 */
+.phead{display:flex;justify-content:space-between;align-items:baseline;
+  margin-top:11px;font-size:10px;color:var(--dim)}
+.phead .mini{border:0;background:none;color:var(--dim);font:inherit;cursor:pointer;padding:0}
+.phead .mini:hover{color:var(--text);text-decoration:underline}
+.note{font-size:11px;color:var(--dim);margin-top:8px;line-height:1.5}
+.note.warn{color:var(--warn)}
+
+.previews{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end;justify-items:center}
+.previews figure{margin:0;display:flex;flex-direction:column;gap:4px;align-items:center;
+  min-width:0}
+.previews figcaption{font-size:10px;color:var(--dim)}
+.pvbox{display:flex;align-items:center;justify-content:center;padding:4px;border-radius:4px;
+  border:1px solid var(--line)}
+.pvbox.checker{background:repeating-conic-gradient(#2a2f39 0 25%,#1c2027 0 50%) 0 0/8px 8px}
+.pvbox.dark{background:#0d0f13}
+.pvbox.light{background:#f2f4f8}
+canvas.pv{image-rendering:pixelated;display:block}
+
+.refs{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.refs figure{margin:0;display:flex;flex-direction:column;gap:4px;align-items:center;
+  max-width:100%;min-width:0}
+.refs figcaption{font-size:10px;color:var(--dim);white-space:nowrap}
+.refs img{image-rendering:pixelated;max-width:100%;height:auto;cursor:zoom-in;
+  background:repeating-conic-gradient(#2a2f39 0 25%,#1c2027 0 50%) 0 0/8px 8px;
+  border:1px solid var(--line);border-radius:4px}
+.refs img:hover{border-color:var(--accent)}
+/* 取色工具下，参考图改成十字光标：点它就是取色，不是放大（放大走「放大」按钮） */
+body.picking .refs img,body.picking .viewer img{cursor:crosshair}
+body.picking .refs img:hover{border-color:var(--warn)}
+.zoombar{display:flex;align-items:center;gap:6px;margin-top:9px;flex-wrap:wrap}
+.zoombar .seg button{padding:3px 8px;font-size:11px}
+.zoombar .note{margin:0}
+
+.viewer{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;
+  background:rgba(6,8,12,.9);cursor:zoom-out;padding:24px}
+.viewer.on{display:flex}
+.viewer img{image-rendering:pixelated;display:block;max-width:90vw;max-height:80vh;
+  background:repeating-conic-gradient(#2a2f39 0 25%,#1c2027 0 50%) 0 0/12px 12px;
+  border:1px solid #3a4152;border-radius:6px}
+.viewer .vcap{position:absolute;left:0;right:0;bottom:18px;text-align:center;
+  font:12px ui-monospace,monospace;color:#c8d2e0}
+.viewer .vclose{position:absolute;top:16px;right:20px;font-size:12px;color:#c8d2e0;
+  border:1px solid #3a4152;background:#1b2029;border-radius:6px;padding:5px 11px;cursor:pointer}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:11px}
+.kv dt{color:var(--dim)}
+.kv dd{margin:0;font-family:ui-monospace,monospace;overflow:hidden;text-overflow:ellipsis}
+.kv dd.hand{color:var(--warn)}
+
+.toast{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);
+  background:#26303f;border:1px solid #3a4b66;color:var(--text);padding:9px 16px;
+  border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.45);opacity:0;pointer-events:none;
+  transition:opacity .16s, transform .16s;max-width:70vw;font-size:12px;
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.bad{background:#3a2224;border-color:#6b3a38}
+@media (max-width:1100px){
+  .workspace{grid-template-columns:minmax(0,1fr)}
+  .side{flex-direction:row;flex-wrap:wrap;overflow:visible}
+  .side section{flex:1 1 200px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="dot"></span>
+    <h1>像素图标编辑器</h1>
+    <span class="sub">手绘覆盖层 · 保存即重建 .ico 与 preview.png</span>
+  </div>
+  <div class="head-actions">
+    <span class="status" id="status">未选择</span>
+    <a class="btn small ghost" id="open-preview" href="/preview.png" target="_blank" rel="noopener">全量预览</a>
+    <button class="btn small ghost" id="reset" disabled>还原</button>
+    <button class="btn primary" id="save" disabled>保存并重建</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="search"><input id="search" type="search" placeholder="搜索图标名 / 来源…" autocomplete="off"></div>
+    <div class="count" id="count"></div>
+    <div class="list" id="list"></div>
+  </aside>
+
+  <main>
+    <div class="toolbar">
+      <div class="seg" id="sizes"></div>
+      <div class="sep"></div>
+      <div class="seg" id="tools">
+        <button data-tool="pen" class="on" title="铅笔 (B)">铅笔</button>
+        <button data-tool="eraser" title="橡皮 (E)">橡皮</button>
+        <button data-tool="fill" title="填充 (G)">填充</button>
+        <button data-tool="pick" title="取色 (I)">取色</button>
+      </div>
+      <button class="btn small" id="undo" title="撤销 (Ctrl+Z)" disabled>撤销</button>
+      <button class="btn small" id="redo" title="重做 (Ctrl+Shift+Z)" disabled>重做</button>
+      <label class="chk"><input type="checkbox" id="grid" checked> 网格</label>
+      <span class="hint">左键涂 · 右键擦 · 像素要么全实要么全透</span>
+    </div>
+
+    <div class="workspace">
+      <div class="canvas-card">
+        <canvas id="grid-canvas"></canvas>
+      </div>
+
+      <div class="side">
+        <section>
+          <h2>颜色</h2>
+          <div class="colorrow">
+            <input type="color" id="color" value="#000000">
+            <input class="hex" id="hex" value="#000000" spellcheck="false" autocomplete="off">
+          </div>
+          <div class="palette" id="palette"></div>
+          <div class="rowbtns">
+            <button class="btn small" id="quant" title="按出现频率保留 15 色，其余就近合并">压到 15 色</button>
+            <button class="btn small" id="clear" title="整张清成透明（可撤销）">清空</button>
+          </div>
+          <div class="note" id="color-note"></div>
+          <div id="recent-wrap" hidden>
+            <div class="phead">
+              <span>取色记录</span>
+              <button class="mini" id="recent-clear">清空</button>
+            </div>
+            <div class="palette" id="recent"></div>
+          </div>
+        </section>
+
+        <section>
+          <h2>预览</h2>
+          <div class="previews">
+            <figure><div class="pvbox checker"><canvas class="pv" data-scale="1"></canvas></div><figcaption>100%</figcaption></figure>
+            <figure><div class="pvbox checker"><canvas class="pv" data-scale="3"></canvas></div><figcaption>300%</figcaption></figure>
+            <figure><div class="pvbox dark"><canvas class="pv" data-scale="3"></canvas></div><figcaption>深底</figcaption></figure>
+            <figure><div class="pvbox light"><canvas class="pv" data-scale="3"></canvas></div><figcaption>浅底</figcaption></figure>
+          </div>
+        </section>
+
+        <section>
+          <h2>产物</h2>
+          <div class="refs">
+            <figure><img id="out16" alt="当前尺寸产物"><figcaption id="out-cap">16 产物</figcaption></figure>
+            <figure><img id="ref32" alt="更大一档参考"><figcaption id="ref-cap">32 参考</figcaption></figure>
+          </div>
+          <div class="zoombar">
+            <div class="seg" id="refzoom">
+              <button data-z="1" title="原始像素大小">×1</button>
+              <button data-z="2">×2</button>
+              <button data-z="4">×4</button>
+              <button data-z="8">×8</button>
+            </div>
+            <button class="btn small" id="refbig" title="全屏看参考（Esc 关闭）">放大</button>
+          </div>
+          <div class="note">产物取自刚重建的 .ico（就是 wine 会拿到的样子）；参考是更大一档，用来对形状。
+            点图或「放大」可全屏看细节。</div>
+        </section>
+
+        <section>
+          <h2>信息</h2>
+          <dl class="kv" id="info">
+            <dt>图标</dt><dd>—</dd>
+          </dl>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="viewer" id="viewer">
+  <img id="viewer-img" alt="">
+  <div class="vcap" id="viewer-cap"></div>
+  <button class="vclose" id="viewer-close">关闭 Esc</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var SIZES = [16, 32, 48, 256];
+  var ZOOMS = [1, 2, 4, 8];
+  // 这两个必须在 S.recent = loadRecent() 之前赋值：var 只有声明被提升，赋值不会。
+  var RECENT_KEY = "pixeledit.recent";
+  var RECENT_MAX = 24;
+  var S = {
+    icons: [], cur: null, size: 16, px: null,
+    tool: "pen", color: "#000000",
+    undo: [], redo: [], grid: true,
+    cell: 32, hover: null, dirty: false, busy: false,
+    refSize: 32, zoom: 4, viewer: null
+  };
+  var savedZoom = parseInt(localStorage.getItem("pixeledit.zoom"), 10);
+  if (ZOOMS.indexOf(savedZoom) >= 0) S.zoom = savedZoom;
+  S.recent = loadRecent();
+
+  var $ = function (sel) { return document.querySelector(sel); };
+  var cv = $("#grid-canvas");
+  var ctx = cv.getContext("2d");
+
+  // ---------------------------------------------------------------- 工具函数
+  function toast(msg, bad) {
+    var el = $("#toast");
+    el.textContent = msg;
+    el.className = "toast on" + (bad ? " bad" : "");
+    clearTimeout(toast.t);
+    toast.t = setTimeout(function () { el.className = "toast"; }, 3200);
+  }
+
+  function hexOf(r, g, b) {
+    return "#" + [r, g, b].map(function (v) {
+      return v.toString(16).padStart(2, "0");
+    }).join("");
+  }
+
+  function parseHex(h) {
+    var m = /^#?([0-9a-f]{6})$/i.exec(h.trim());
+    if (!m) return null;
+    var n = parseInt(m[1], 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  function bytesToB64(bytes) {
+    var out = "", chunk = 0x8000;
+    for (var i = 0; i < bytes.length; i += chunk) {
+      out += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+    }
+    return btoa(out);
+  }
+
+  function b64ToBytes(b64) {
+    var bin = atob(b64), arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return arr;
+  }
+
+  // ---------------------------------------------------------------- 状态栏
+  function updateStatus() {
+    var el = $("#status");
+    if (!S.cur || !S.px) { el.textContent = "未选择"; return; }
+    var colors = palette().length;
+    el.innerHTML = "<b>" + S.cur.name + "</b> · " + S.size + "×" + S.size +
+      " · " + colors + " 色 · " +
+      (S.dirty ? "<span style='color:var(--warn)'>未保存</span>"
+               : (S.hand ? "<span class='hand'>手绘覆盖</span>" : "自动取源"));
+    $("#save").disabled = S.busy || !S.dirty;
+    $("#reset").disabled = S.busy || !S.hand;
+  }
+
+  function updateInfo(extra) {
+    var dl = $("#info");
+    if (!S.cur) { dl.innerHTML = "<dt>图标</dt><dd>—</dd>"; return; }
+    var rows = [
+      ["图标", S.cur.name],
+      ["模块", S.cur.module],
+      ["来源", S.cur.source],
+      ["尺寸", S.size + "×" + S.size],
+      ["颜色", palette().length + " 色"],
+      ["覆盖", S.hand ? "有（tools/pixels）" : "无（We10X 自动）"]
+    ];
+    if (extra) rows = rows.concat(extra);
+    dl.innerHTML = rows.map(function (r) {
+      var cls = r[2] ? " class='" + r[2] + "'" : "";
+      return "<dt>" + r[0] + "</dt><dd" + cls + ">" + r[1] + "</dd>";
+    }).join("");
+  }
+
+  // ---------------------------------------------------------------- 调色板
+  function palette() {
+    if (!S.px) return [];
+    var map = {}, list = [];
+    for (var i = 0; i < S.px.length; i += 4) {
+      if (!S.px[i + 3]) continue;
+      var k = (S.px[i] << 16) | (S.px[i + 1] << 8) | S.px[i + 2];
+      if (!(k in map)) { map[k] = 0; list.push([k, 0]); }
+      map[k]++;
+    }
+    list.sort(function (a, b) { return b[1] - a[1]; });
+    return list.map(function (e) {
+      return { hex: hexOf((e[0] >> 16) & 255, (e[0] >> 8) & 255, e[0] & 255), n: e[1] };
+    });
+  }
+
+  function renderPalette() {
+    var box = $("#palette");
+    var cols = palette();
+    box.innerHTML = "";
+    cols.slice(0, 32).forEach(function (c) {
+      var b = document.createElement("button");
+      b.className = "sw" + (c.hex.toLowerCase() === S.color.toLowerCase() ? " on" : "");
+      b.style.background = c.hex;
+      b.title = c.hex + " × " + c.n;
+      b.onclick = function () { setColor(c.hex); };
+      box.appendChild(b);
+    });
+    var note = $("#color-note");
+    if (cols.length > 15) {
+      note.className = "note warn";
+      note.textContent = "当前 " + cols.length + " 色。4bpp 档只装得下 15 色 + 透明，" +
+        "超出会被量化（16 档最明显）。像素画一般 6~10 色就够。";
+    } else {
+      note.className = "note";
+      note.textContent = S.size + " 档同时落 4/8/32bpp 三格：4bpp 上限 15 色 + 透明。";
+    }
+    renderRecent();
+  }
+
+  // 吸到的色单独记一份：它通常**不在**当前图的色表里（参考图才是目标色），
+  // 只显示「本图颜色」会让人以为取色没生效。跨图标、跨刷新都留着。
+  function loadRecent() {
+    try {
+      var a = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
+      if (!Array.isArray(a)) return [];
+      return a.filter(function (h) {
+        return typeof h === "string" && /^#[0-9a-f]{6}$/i.test(h);
+      }).map(function (h) { return h.toLowerCase(); }).slice(0, RECENT_MAX);
+    } catch (err) { return []; }
+  }
+
+  function saveRecent() {
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(S.recent)); }
+    catch (err) { /* 隐私模式写不进去，就只留内存里的一份 */ }
+  }
+
+  function addRecent(hex) {
+    hex = hex.toLowerCase();
+    var i = S.recent.indexOf(hex);
+    if (i >= 0) S.recent.splice(i, 1);          // 重新吸同一个色：提到最前，不重复
+    S.recent.unshift(hex);
+    if (S.recent.length > RECENT_MAX) S.recent.length = RECENT_MAX;
+    saveRecent();
+  }
+
+  function removeRecent(hex) {
+    var i = S.recent.indexOf(hex.toLowerCase());
+    if (i < 0) return false;
+    S.recent.splice(i, 1);
+    saveRecent();
+    renderRecent();
+    return true;
+  }
+
+  function renderRecent() {
+    var box = $("#recent");
+    if (!box) return;
+    $("#recent-wrap").hidden = !S.recent.length;
+    box.innerHTML = "";
+    var cur = S.color.toLowerCase();
+    S.recent.forEach(function (hex) {
+      var b = document.createElement("button");
+      b.className = "sw" + (hex === cur ? " on" : "");
+      b.style.background = hex;
+      b.title = hex + "（取色记录，右键移除）";
+      b.onclick = function () { setColor(hex); };
+      b.oncontextmenu = function (e) {
+        e.preventDefault();
+        removeRecent(hex);
+        toast("已从取色记录移除 " + hex);
+      };
+      box.appendChild(b);
+    });
+  }
+
+  function setColor(hex) {
+    S.color = hex;
+    $("#color").value = hex;
+    $("#hex").value = hex;
+    renderPalette();
+    render();
+  }
+
+  // 起手式：把自动缩出来的几十种抗锯齿色压成 4bpp 装得下的 15 色。
+  // 保留出现最多的那批颜色，其余就近合并 —— 比中位切分更贴近「作者原本想画的那几块色」。
+  function quantize(limit) {
+    var px = S.px, counts = {}, order = [], i;
+    for (i = 0; i < px.length; i += 4) {
+      if (!px[i + 3]) continue;
+      var k = (px[i] << 16) | (px[i + 1] << 8) | px[i + 2];
+      if (!(k in counts)) { counts[k] = 0; order.push(k); }
+      counts[k]++;
+    }
+    if (!order.length) return;
+    order.sort(function (a, b) { return counts[b] - counts[a]; });
+    var keep = order.slice(0, limit).map(function (k) {
+      return [(k >> 16) & 255, (k >> 8) & 255, k & 255];
+    });
+    for (i = 0; i < px.length; i += 4) {
+      if (!px[i + 3]) continue;
+      var best = 0, bd = 1e9;
+      for (var n = 0; n < keep.length; n++) {
+        var dr = px[i] - keep[n][0], dg = px[i + 1] - keep[n][1], db = px[i + 2] - keep[n][2];
+        var d = dr * dr + dg * dg + db * db;
+        if (d < bd) { bd = d; best = n; }
+      }
+      px[i] = keep[best][0]; px[i + 1] = keep[best][1]; px[i + 2] = keep[best][2];
+    }
+  }
+
+  // ---------------------------------------------------------------- 画布
+  function layoutCanvas() {
+    var n = S.size;
+    S.cell = Math.max(3, Math.floor(544 / n));
+    var w = n * S.cell;
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(w * dpr);
+    cv.style.width = w + "px";
+    cv.style.height = w + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.imageSmoothingEnabled = false;
+  }
+
+  function render() {
+    if (!S.px) { ctx.clearRect(0, 0, cv.width, cv.height); return; }
+    var n = S.size, c = S.cell, px = S.px, w = n * c;
+    ctx.clearRect(0, 0, w, w);
+    for (var y = 0; y < n; y++) {
+      for (var x = 0; x < n; x++) {
+        var i = (y * n + x) * 4;
+        if (!px[i + 3]) {
+          ctx.fillStyle = ((x + y) & 1) ? "#20242c" : "#171a20";
+        } else {
+          ctx.fillStyle = "rgb(" + px[i] + "," + px[i + 1] + "," + px[i + 2] + ")";
+        }
+        ctx.fillRect(x * c, y * c, c, c);
+      }
+    }
+    if (S.grid && c >= 6) {
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(255,255,255,0.075)";
+      ctx.beginPath();
+      for (var k = 1; k < n; k++) {
+        ctx.moveTo(k * c + 0.5, 0); ctx.lineTo(k * c + 0.5, w);
+        ctx.moveTo(0, k * c + 0.5); ctx.lineTo(w, k * c + 0.5);
+      }
+      ctx.stroke();
+      if (n % 8 === 0) {
+        ctx.strokeStyle = "rgba(255,255,255,0.16)";
+        ctx.beginPath();
+        for (var m = 8; m < n; m += 8) {
+          ctx.moveTo(m * c + 0.5, 0); ctx.lineTo(m * c + 0.5, w);
+          ctx.moveTo(0, m * c + 0.5); ctx.lineTo(w, m * c + 0.5);
+        }
+        ctx.stroke();
+      }
+    }
+    if (S.hover) {
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(S.hover.x * c + 0.5, S.hover.y * c + 0.5, c - 1, c - 1);
+    }
+    renderPreviews();
+  }
+
+  function renderPreviews() {
+    var list = document.querySelectorAll("canvas.pv");
+    // 单格显示上限按实际栏宽算：格子撑破网格的话，256 档会把整栏顶出横向滚动条，
+    // 连带把下面的产物/参考挤到屏幕外。
+    var grid = document.querySelector(".previews");
+    var cap = grid && grid.clientWidth ? Math.floor((grid.clientWidth - 8) / 2) - 12 : 88;
+    cap = Math.max(40, Math.min(120, cap));
+    for (var i = 0; i < list.length; i++) {
+      var el = list[i], scale = +el.dataset.scale, n = S.size, size = n * scale;
+      var shown = Math.min(size, cap);
+      el.width = size; el.height = size;
+      el.style.width = shown + "px"; el.style.height = shown + "px";
+      el.title = n + "px 的 " + scale + " 倍预览" +
+        (shown < size ? "（显示已缩到 " + shown + "px，看原始像素请用「产物」的 ×1）" : "");
+      var g = el.getContext("2d");
+      g.clearRect(0, 0, size, size);
+      if (!S.px) continue;
+      for (var y = 0; y < n; y++) {
+        for (var x = 0; x < n; x++) {
+          var k = (y * n + x) * 4;
+          if (!S.px[k + 3]) continue;
+          g.fillStyle = "rgb(" + S.px[k] + "," + S.px[k + 1] + "," + S.px[k + 2] + ")";
+          g.fillRect(x * scale, y * scale, scale, scale);
+        }
+      }
+    }
+  }
+
+  function cellFromEvent(e) {
+    var r = cv.getBoundingClientRect();
+    var cw = r.width / S.size;
+    var x = Math.floor((e.clientX - r.left) / cw);
+    var y = Math.floor((e.clientY - r.top) / cw);
+    if (x < 0 || y < 0 || x >= S.size || y >= S.size) return null;
+    return { x: x, y: y };
+  }
+
+  // ---------------------------------------------------------------- 从参考图取色
+  // 参考图是 <img>（data URL），像素只能先画进离屏 canvas 再读。
+  // 它是整数倍 nearest 显示，所以按 naturalWidth 折算坐标正好落在格子上，不会串色。
+  var pickPad = null;
+  function sampleImg(img, clientX, clientY) {
+    var nw = img.naturalWidth, nh = img.naturalHeight;
+    if (!nw || !nh || !img.getAttribute("src")) return null;
+    var r = img.getBoundingClientRect();
+    if (!r.width || !r.height) return null;
+    var x = Math.floor((clientX - r.left) / r.width * nw);
+    var y = Math.floor((clientY - r.top) / r.height * nh);
+    if (x < 0 || y < 0 || x >= nw || y >= nh) return null;
+    if (!pickPad) pickPad = document.createElement("canvas");
+    pickPad.width = nw; pickPad.height = nh;
+    var g = pickPad.getContext("2d");
+    g.clearRect(0, 0, nw, nh);
+    g.drawImage(img, 0, 0, nw, nh);
+    var d = g.getImageData(x, y, 1, 1).data;
+    return { x: x, y: y, hex: hexOf(d[0], d[1], d[2]), a: d[3] };
+  }
+
+  function pickFromImg(img, e, label) {
+    var s = sampleImg(img, e.clientX, e.clientY);
+    if (!s) return false;
+    if (s.a < 128) {
+      toast(label + " 这一格是透明的，没有颜色可取", true);
+      return true;
+    }
+    addRecent(s.hex);
+    setColor(s.hex);
+    toast("取自" + label + " (" + s.x + "," + s.y + ") " + s.hex);
+    return true;
+  }
+
+  // ---------------------------------------------------------------- 编辑
+  // 两个按钮的可用态只跟栈长走：凡是动到 S.undo / S.redo 的地方都调这里，
+  // 不在各处零散地写 disabled，免得漏掉一支（撤销后重做一直点不动就是这么来的）。
+  function syncHistory() {
+    $("#undo").disabled = !S.undo.length;
+    $("#redo").disabled = !S.redo.length;
+  }
+
+  function pushUndo() {
+    S.undo.push(new Uint8ClampedArray(S.px));
+    if (S.undo.length > 80) S.undo.shift();
+    S.redo.length = 0;                 // 新的一笔会作废整条重做链
+    syncHistory();
+  }
+
+  function paint(p, erase) {
+    var i = (p.y * S.size + p.x) * 4;
+    if (erase) {
+      S.px[i] = S.px[i + 1] = S.px[i + 2] = S.px[i + 3] = 0;
+    } else {
+      var c = parseHex(S.color) || [0, 0, 0];
+      S.px[i] = c[0]; S.px[i + 1] = c[1]; S.px[i + 2] = c[2]; S.px[i + 3] = 255;
+    }
+  }
+
+  function lineTo(a, b, erase) {
+    var dx = Math.abs(b.x - a.x), dy = Math.abs(b.y - a.y);
+    var sx = a.x < b.x ? 1 : -1, sy = a.y < b.y ? 1 : -1;
+    var err = dx - dy, x = a.x, y = a.y;
+    for (var guard = 0; guard < 4096; guard++) {
+      paint({ x: x, y: y }, erase);
+      if (x === b.x && y === b.y) break;
+      var e2 = 2 * err;
+      if (e2 > -dy) { err -= dy; x += sx; }
+      if (e2 < dx) { err += dx; y += sy; }
+    }
+  }
+
+  function flood(start, hex) {
+    var n = S.size, px = S.px;
+    var si = (start.y * n + start.x) * 4;
+    var target = [px[si], px[si + 1], px[si + 2], px[si + 3]];
+    var rgb = parseHex(hex) || [0, 0, 0];
+    var fill = [rgb[0], rgb[1], rgb[2], 255];
+    if (target[0] === fill[0] && target[1] === fill[1] &&
+        target[2] === fill[2] && target[3] === fill[3]) return;
+    var stack = [start], seen = new Uint8Array(n * n);
+    while (stack.length) {
+      var p = stack.pop(), idx = p.y * n + p.x;
+      if (seen[idx]) continue;
+      seen[idx] = 1;
+      var i = idx * 4;
+      if (px[i] !== target[0] || px[i + 1] !== target[1] ||
+          px[i + 2] !== target[2] || px[i + 3] !== target[3]) continue;
+      px[i] = fill[0]; px[i + 1] = fill[1]; px[i + 2] = fill[2]; px[i + 3] = fill[3];
+      if (p.x > 0) stack.push({ x: p.x - 1, y: p.y });
+      if (p.x < n - 1) stack.push({ x: p.x + 1, y: p.y });
+      if (p.y > 0) stack.push({ x: p.x, y: p.y - 1 });
+      if (p.y < n - 1) stack.push({ x: p.x, y: p.y + 1 });
+    }
+  }
+
+  var stroke = null;
+
+  cv.addEventListener("pointerdown", function (e) {
+    if (!S.px || S.busy) return;
+    var p = cellFromEvent(e);
+    if (!p) return;
+    e.preventDefault();
+    // 合成事件（自动化测试）没有真实指针，捕获会抛；真实鼠标/触控不会
+    try { cv.setPointerCapture(e.pointerId); } catch (err) { /* 忽略 */ }
+    var erase = e.button === 2 || S.tool === "eraser";
+    if (S.tool === "pick" && !erase) {
+      var i = (p.y * S.size + p.x) * 4;
+      if (S.px[i + 3]) setColor(hexOf(S.px[i], S.px[i + 1], S.px[i + 2]));
+      return;
+    }
+    pushUndo();
+    S.dirty = true;
+    if (S.tool === "fill" && !erase) {
+      flood(p, S.color);
+    } else {
+      stroke = { erase: erase, last: p };
+      paint(p, erase);
+    }
+    render(); updateStatus();
+  });
+
+  cv.addEventListener("pointermove", function (e) {
+    var p = cellFromEvent(e);
+    var changed = (!!p !== !!S.hover) ||
+      (p && S.hover && (p.x !== S.hover.x || p.y !== S.hover.y));
+    S.hover = p;
+    if (stroke && p) {
+      lineTo(stroke.last, p, stroke.erase);
+      stroke.last = p;
+      S.dirty = true;
+      render(); updateStatus();
+      return;
+    }
+    if (changed) render();
+  });
+
+  cv.addEventListener("pointerleave", function () {
+    if (S.hover) { S.hover = null; render(); }
+  });
+
+  cv.addEventListener("pointerup", function () { stroke = null; });
+  cv.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+
+  function undo() {
+    if (!S.undo.length) return;
+    S.redo.push(new Uint8ClampedArray(S.px));
+    S.px = S.undo.pop();
+    S.dirty = true;
+    syncHistory();
+    render(); renderPalette(); updateStatus();
+  }
+
+  function redo() {
+    if (!S.redo.length) return;
+    S.undo.push(new Uint8ClampedArray(S.px));
+    S.px = S.redo.pop();
+    S.dirty = true;
+    syncHistory();
+    render(); renderPalette(); updateStatus();
+  }
+
+  // ---------------------------------------------------------------- 缩放与查看
+  // 两档图都按整数倍放大（×1/2/4/8），像素才不会被采样糊掉。
+  // 档位在窄栏里放不下时退到「放得下的最大整数倍」，而不是让 CSS 把图缩成非整数倍。
+  function fitScale(n, want) {
+    var box = document.querySelector(".refs");
+    var avail = box ? box.clientWidth : 0;
+    if (!avail || !n) return want;
+    return Math.max(1, Math.min(want, Math.floor(avail / n)));
+  }
+
+  function paintZoom() {
+    var zo = fitScale(S.size, S.zoom);
+    var zr = fitScale(S.refSize, S.zoom);
+    var box = document.querySelector(".refs");
+    var avail = box ? box.clientWidth : 0;
+    var o = $("#out16"), r = $("#ref32");
+    o.style.width = o.style.height = (S.size * zo) + "px";
+    r.style.width = r.style.height = (S.refSize * zr) + "px";
+    o.title = "当前尺寸产物 · " + S.size + "px ×" + zo + (zo < S.zoom ? "（栏宽放不下 ×" + S.zoom + "）" : "");
+    r.title = "点开全屏看参考 · " + S.refSize + "px ×" + zr + (zr < S.zoom ? "（栏宽放不下 ×" + S.zoom + "）" : "");
+    document.querySelectorAll("#refzoom button").forEach(function (b) {
+      b.classList.toggle("on", Number(b.dataset.z) === S.zoom);
+    });
+    $("#out-cap").textContent = S.size + " 产物 · " + zoomLabel(S.size, zo, avail);
+    $("#ref-cap").textContent = S.refSize + " 参考 · " + zoomLabel(S.refSize, zr, avail);
+    var fig = r.closest("figure");
+    if (fig) fig.style.display = r.getAttribute("src") ? "" : "none";
+  }
+
+  // 连 ×1 都塞不进栏里时（256 档），CSS 会把图压到栏宽，这时别再标「×1」骗人。
+  function zoomLabel(n, k, avail) {
+    return avail && n * k > avail ? "按栏宽" : "×" + k;
+  }
+
+  function openViewer(which) {
+    var img = which === "ref" ? $("#ref32") : $("#out16");
+    if (!img.getAttribute("src")) return;
+    var n = which === "ref" ? S.refSize : S.size;
+    var box = Math.min(window.innerWidth * 0.86, window.innerHeight * 0.74);
+    var k = Math.max(1, Math.floor(box / n));
+    var vimg = $("#viewer-img");
+    vimg.src = img.src;
+    vimg.style.width = vimg.style.height = (n * k) + "px";
+    S.viewer = which;
+    $("#viewer-cap").textContent =
+      (which === "ref" ? S.refSize + " 档参考" : S.size + " 产物") +
+      " · " + n + "×" + n + " 像素 · 放大 " + k + " 倍" +
+      (S.tool === "pick" ? " · 点图取色，点空白处关闭" : "");
+    $("#viewer").classList.add("on");
+  }
+
+  function closeViewer() {
+    $("#viewer").classList.remove("on");
+    $("#viewer-img").removeAttribute("src");
+    S.viewer = null;
+  }
+
+  // ---------------------------------------------------------------- 数据
+  function loadIcon(icon, keepSize) {
+    S.cur = icon;
+    $("#status").textContent = "载入 " + icon.name + "…";
+    fetch("/api/pixels?name=" + encodeURIComponent(icon.name) + "&size=" + S.size)
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (!d.ok) throw new Error(d.error || "读取失败");
+        S.px = new Uint8ClampedArray(b64ToBytes(d.pixels));
+        S.undo = []; S.redo = []; S.dirty = false; S.hand = d.hand;
+        syncHistory();
+        S.refSize = d.ref_size || S.refSize;
+        $("#out16").src = d.product || icon.thumb || "";
+        $("#ref32").src = d.reference || "";
+        paintZoom();
+        layoutCanvas();
+        renderPalette();
+        render();
+        updateStatus();
+        updateInfo();
+        markSelection();
+        localStorage.setItem("pixeledit.last", icon.name);
+        try {
+          history.replaceState(null, "", "?icon=" + encodeURIComponent(icon.name) + "&size=" + S.size);
+        } catch (err) { /* file:// 之类的场景忽略 */ }
+      })
+      .catch(function (err) {
+        toast("载入失败：" + err.message, true);
+        $("#status").textContent = "载入失败";
+      });
+  }
+
+  function markSelection() {
+    var nodes = document.querySelectorAll(".item");
+    for (var i = 0; i < nodes.length; i++) {
+      nodes[i].classList.toggle("on", nodes[i].dataset.name === (S.cur && S.cur.name));
+    }
+    var on = document.querySelector(".item.on");
+    if (on) on.scrollIntoView({ block: "nearest" });
+  }
+
+  function applyShots(d) {
+    if (d.product) {
+      $("#out16").src = d.product;
+      if (S.size === 16 && S.cur) {
+        S.cur.thumb = d.product;
+        var img = document.querySelector('.item[data-name="' + S.cur.name + '"] img');
+        if (img) img.src = d.product;
+      }
+    }
+    if (d.reference) {
+      S.refSize = d.ref_size || S.refSize;
+      $("#ref32").src = d.reference;
+    }
+    paintZoom();
+  }
+
+  function save() {
+    if (!S.cur || S.busy || !S.dirty) return;
+    S.busy = true;
+    $("#save").disabled = true;
+    $("#save").textContent = "重建中…";
+    fetch("/api/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: S.cur.name, size: S.size, pixels: bytesToB64(S.px) })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.error) throw new Error(d.error);
+        S.dirty = false;
+        S.hand = true;
+        applyShots(d);
+        renderPalette();
+        updateStatus();
+        updateInfo([["构建", d.ok ? "成功" : "有失败项，见控制台"]]);
+        if (S.cur) {
+          var ov = (S.cur.overrides || []).slice();
+          if (ov.indexOf(S.size) < 0) ov.push(S.size);
+          S.cur.overrides = ov;
+          renderList();
+        }
+        toast(d.ok ? "已重建 " + S.cur.name + ".ico 与 preview.png（" + d.colors + " 色）"
+                   : "构建有问题：" + (d.log || "").split("\n").slice(-1)[0], !d.ok);
+        if (!d.ok) console.warn(d.log);
+      })
+      .catch(function (err) { toast("保存失败：" + err.message, true); })
+      .finally(function () {
+        S.busy = false;
+        $("#save").textContent = "保存并重建";
+        updateStatus();
+      });
+  }
+
+  function reset() {
+    if (!S.cur || S.busy) return;
+    if (!confirm("删掉 " + S.cur.name + " 的 " + S.size + " 档手绘覆盖，恢复成 We10X 自动渲染？")) return;
+    S.busy = true;
+    fetch("/api/reset", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: S.cur.name, size: S.size })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.error) throw new Error(d.error);
+        toast(d.removed.length ? "已删除覆盖并重建" : "这个尺寸本来就没有覆盖");
+        if (S.cur) {
+          S.cur.overrides = (S.cur.overrides || []).filter(function (s) { return s !== S.size; });
+        }
+        S.busy = false;
+        renderList();
+        loadIcon(S.cur);
+      })
+      .catch(function (err) {
+        S.busy = false;
+        toast("还原失败：" + err.message, true);
+      });
+  }
+
+  // ---------------------------------------------------------------- 列表
+  function renderList() {
+    var q = $("#search").value.trim().toLowerCase();
+    var box = $("#list");
+    box.innerHTML = "";
+    var shown = 0;
+    S.icons.forEach(function (it) {
+      var hay = (it.name + " " + it.source + " " + it.module).toLowerCase();
+      if (q && hay.indexOf(q) < 0) return;
+      shown++;
+      var el = document.createElement("div");
+      el.className = "item";
+      el.dataset.name = it.name;
+      el.innerHTML =
+        '<img alt="" src="' + (it.thumb || "") + '">' +
+        '<div class="nm"><b>' + it.name + '</b><span>' + it.source + '</span></div>' +
+        (it.overrides && it.overrides.length
+          ? '<span class="mark">手绘 ' + it.overrides.join("/") + '</span>' : "");
+      el.onclick = function () {
+        if (S.dirty && !confirm("当前改动未保存，切换会丢掉。继续？")) return;
+        loadIcon(it);
+      };
+      box.appendChild(el);
+    });
+    if (!shown) box.innerHTML = '<div class="empty">没有匹配的图标</div>';
+    $("#count").textContent = shown + " / " + S.icons.length + " 个图标";
+    markSelection();
+  }
+
+  function renderSizes() {
+    var box = $("#sizes");
+    box.innerHTML = "";
+    SIZES.forEach(function (s) {
+      var b = document.createElement("button");
+      b.textContent = s;
+      b.className = s === S.size ? "on" : "";
+      b.onclick = function () {
+        if (s === S.size) return;
+        if (S.dirty && !confirm("当前改动未保存，换尺寸会丢掉。继续？")) return;
+        S.size = s;
+        renderSizes();
+        if (S.cur) loadIcon(S.cur);
+      };
+      box.appendChild(b);
+    });
+  }
+
+  // ---------------------------------------------------------------- 事件
+  $("#search").addEventListener("input", renderList);
+  $("#save").onclick = save;
+  $("#reset").onclick = reset;
+  $("#undo").onclick = undo;
+  $("#redo").onclick = redo;
+  $("#refzoom").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-z]");
+    if (!b) return;
+    S.zoom = Number(b.dataset.z);
+    localStorage.setItem("pixeledit.zoom", String(S.zoom));
+    paintZoom();
+  });
+  $("#out16").onclick = function () { openViewer("out"); };
+  // 取色工具下点参考图 = 吸色；放大仍走「放大」按钮（或先切回别的工具再点）
+  $("#ref32").onclick = function (e) {
+    if (S.tool === "pick" && pickFromImg(this, e, "参考图")) return;
+    openViewer("ref");
+  };
+  $("#refbig").onclick = function () { openViewer("ref"); };
+  var rzTimer = 0;
+  window.addEventListener("resize", function () {
+    clearTimeout(rzTimer);
+    rzTimer = setTimeout(function () { paintZoom(); renderPreviews(); }, 120);
+  });
+  // 全屏里也能吸色（大图更好点）；取色时点图不关闭，点空白处或 Esc 才关
+  $("#viewer").onclick = function (e) {
+    if (S.tool === "pick" && e.target === $("#viewer-img") &&
+        pickFromImg(e.target, e, S.viewer === "out" ? "产物" : "参考图")) return;
+    closeViewer();
+  };
+  $("#viewer-close").onclick = function (e) { e.stopPropagation(); closeViewer(); };
+  $("#quant").onclick = function () {
+    if (!S.px || S.busy) return;
+    pushUndo();
+    quantize(15);
+    S.dirty = true;
+    render(); renderPalette(); updateStatus();
+  };
+  $("#clear").onclick = function () {
+    if (!S.px || S.busy) return;
+    pushUndo();
+    S.px.fill(0);
+    S.dirty = true;
+    render(); renderPalette(); updateStatus();
+  };
+  $("#grid").onchange = function (e) { S.grid = e.target.checked; render(); };
+  $("#color").oninput = function (e) { setColor(e.target.value); };
+  $("#hex").onchange = function (e) {
+    var c = parseHex(e.target.value);
+    if (c) {
+      var h = hexOf(c[0], c[1], c[2]);
+      addRecent(h);                     // 手输的颜色也进取色记录，方便回头再用
+      setColor(h);
+    } else e.target.value = S.color;
+  };
+  $("#recent-clear").onclick = function () {
+    if (!S.recent.length) return;
+    S.recent = [];
+    saveRecent();
+    renderRecent();
+    toast("取色记录已清空");
+  };
+
+  // 切工具只走这一处：按钮高亮与「参考图可否吸色」的光标都跟着它走。
+  function setTool(name) {
+    S.tool = name;
+    document.querySelectorAll("#tools button").forEach(function (x) {
+      x.classList.toggle("on", x.dataset.tool === name);
+    });
+    document.body.classList.toggle("picking", name === "pick");
+    var ref = $("#ref32");
+    if (ref) {
+      ref.title = name === "pick"
+        ? "点这里取色（放大请用「放大」按钮）"
+        : "点这里全屏查看参考图";
+    }
+    // 全屏开着时切到取色，caption 里的提示也要跟着出来
+    if (S.viewer && $("#viewer").classList.contains("on")) openViewer(S.viewer);
+  }
+
+  document.querySelectorAll("#tools button").forEach(function (b) {
+    b.onclick = function () { setTool(b.dataset.tool); };
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { closeViewer(); return; }
+    var mod = e.ctrlKey || e.metaKey;
+    if (mod && e.key.toLowerCase() === "z") {
+      e.preventDefault();
+      e.shiftKey ? redo() : undo();
+      return;
+    }
+    if (mod && e.key.toLowerCase() === "y") { e.preventDefault(); redo(); return; }
+    if (mod && e.key.toLowerCase() === "s") { e.preventDefault(); save(); return; }
+    if (e.target.tagName === "INPUT") return;
+    var map = { b: "pen", e: "eraser", g: "fill", i: "pick" };
+    var t = map[e.key.toLowerCase()];
+    if (t) setTool(t);
+  });
+
+  window.addEventListener("beforeunload", function (e) {
+    if (S.dirty) { e.preventDefault(); e.returnValue = ""; }
+  });
+
+  // ---------------------------------------------------------------- 启动
+  var params = new URLSearchParams(location.search);
+  var qSize = parseInt(params.get("size"), 10);
+  if (SIZES.indexOf(qSize) >= 0) S.size = qSize;
+  renderSizes();
+  setTool(S.tool);
+  paintZoom();
+  layoutCanvas();
+  fetch("/api/icons")
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (!d.ok) throw new Error(d.error || "列表读取失败");
+      S.icons = d.icons;
+      renderList();
+      var want = params.get("icon") || localStorage.getItem("pixeledit.last");
+      var pick = S.icons.filter(function (x) { return x.name === want; })[0] || S.icons[0];
+      if (pick) loadIcon(pick);
+    })
+    .catch(function (err) {
+      $("#status").textContent = "服务未连接";
+      toast("读取图标列表失败：" + err.message, true);
+    });
+})();
+</script>
+</body>
+</html>

@@ -44,7 +44,7 @@ netdrive	IDI_SHELL_NETDRIVE(10)			folder-remote		places		网络驱动器（place
 netdrive2	IDI_SHELL_NETDRIVE2(11)			network-server		places		网络驱动器（第二款）
 network		IDI_SHELL_NETWORK(15)/MY_NETWORK_PLACES(18)	network-workgroup	apps		网上邻居
 optical_disc	IDI_SHELL_MUSIC_CD(41)/CD_ROM(294)/DVD(222)	media-optical	devices		光盘	16=scalable
-optical_drive	IDI_SHELL_OPTICAL_DRIVE(12)/DVD_DRIVE(291)	drive-optical	devices		光驱
+optical_drive	IDI_SHELL_OPTICAL_DRIVE(12)/DVD_DRIVE(291)	drive-optical-symbolic	devices		光驱（We10X 的 drive-optical 与 media-optical 逐字节相同、16/22/24 还是它的软链，直接用会和光盘撞脸；真正的光驱画法只有 devices/symbolic/drive-optical-symbolic：驱动器面板 + 托盘里露半个盘，16~256 全走这一张矢量放大）
 play		IDI_SHELL_PLAY(246)			media-playback-start	actions		播放	16=32
 printer		IDI_SHELL_PRINTER(17)/ADD_PRINTER(139)/FAX(196)	printer		devices		打印机	16=scalable
 ramdisk		IDI_SHELL_RAMDISK(13)			media-flash		devices		内存盘（wine 原图是内存条）	16=scalable
@@ -66,6 +66,6 @@ oic_bang	OIC_BANG (IDI_EXCLAMATION)		dialog-warning		status		警告（黄三角�
 oic_hand	OIC_HAND (IDI_HAND)			dialog-error		status		错误/停止
 oic_note	OIC_NOTE (IDI_ASTERISK)		dialog-information	status		信息
 oic_ques	OIC_QUES (IDI_QUESTION)		dialog-question	status		问号（We10X 的 16 是紫色、32 是蓝色，统一用 32 档）	16=32
-oic_sample	OIC_SAMPLE (IDI_APPLICATION)	application-x-executable	mimes	默认应用图标（16 档画风与 scalable 不同，统一）	16=scalable
+oic_sample	OIC_SAMPLE (IDI_APPLICATION)	preferences-system-windows	apps	默认应用/窗口图标。IDI_APPLICATION 在 Windows 里是「窗口」，不能用 mimes/application-x-executable（那是白纸+齿轮的「文件」图标，和 document 撞脸）	16=scalable
 oic_shield	OIC_SHIELD				security-high		status		盾牌（status/16 是白色不可见、status/24 是浅绿，都用 32 档的饱和绿）	16=32
 oic_winlogo	OIC_WINLOGO (IDI_WINLOGO)		start-here-symbolic		status		⚠ 单色旗标（CSS color:#ffffff，给深色面板用），只有 16/22/24 档

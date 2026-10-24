@@ -33,11 +33,18 @@ DEFAULT_WINE_TREE = "/home/waim/vscode-workspace/wine-tkg-10.10-custom"
 DEFAULT_SRC = "/home/waim/vscode-workspace/We10X-icon-theme/src"
 
 
-def find_module(wine_tree, name):
-    """这个资源属于 shell32 还是 user32？按 wine 树里谁有 <名字>.ico 判。"""
+def find_module(wine_tree, name, out_root=None):
+    """这个资源属于 shell32 还是 user32？按谁有 <名字>.ico 判。
+
+    先看 wine 树（标准用法），退一步再看项目自己的 `dlls/` —— 这样在没有 wine
+    源码树的机器上（例如只想用 pixeledit 手画几个图标）也能构建。
+    """
     for mod in ("shell32", "user32"):
-        if os.path.exists(os.path.join(wine_tree, "dlls", mod, "resources", "%s.ico" % name)):
-            return mod
+        for root in (wine_tree, out_root):
+            if not root:
+                continue
+            if os.path.exists(os.path.join(root, "dlls", mod, "resources", "%s.ico" % name)):
+                return mod
     return None
 
 
@@ -75,7 +82,7 @@ def main(argv=None):
             skipped.append((name, "映射表留空"))
             continue
 
-        mod = find_module(args.wine_tree, name)
+        mod = find_module(args.wine_tree, name, args.out)
         if not mod:
             failed.append((name, "在 wine 树里找不到这个资源"))
             continue
@@ -110,7 +117,8 @@ def main(argv=None):
 
         # ---- 2) 拼版 SVG
         svg = mksheet.build_sheet(resolved, args.src,
-                                  "%s  @  %s/%s" % (name, row["cat"], row["we10x"]))
+                                  "%s  @  %s/%s" % (name, row["cat"], row["we10x"]),
+                                  wine_name=name)
         with open(svg_path, "w", encoding="utf-8") as fh:
             fh.write(svg)
 
@@ -140,8 +148,10 @@ def main(argv=None):
             if only_got:
                 bits.append("本产物多 %s" % ",".join("%d/%d" % s for s in only_got))
             verdict = "10 帧标准（%s）" % "；".join(bits)
+        hand = [s for s in mksheet.NEEDED_SIZES if mksheet.pixel_override(name, s)]
         ok.append((name, mod, "%s/%s" % picks[16], "%s/%s" % picks[32],
-                   "%d帧 %s" % (len(got), verdict)))
+                   "%d帧 %s%s" % (len(got), verdict,
+                                  ("，手绘 %s" % "/".join(str(s) for s in hand)) if hand else "")))
 
     if not args.quiet:
         print("%-14s %-9s %-16s %-18s %s" % ("wine", "模块", "16档源", "32档源", "结果"))
